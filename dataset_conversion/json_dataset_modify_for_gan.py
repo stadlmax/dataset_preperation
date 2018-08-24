@@ -95,12 +95,12 @@ def main():
                 annos_small.append(anno)
             else:  # area > thresh
                 annos_large.append(anno)
-        if len(annos_small) >= size_annos * args.fraction:
+        if len(annos_small) >= max(round(size_annos * args.fraction), 1):
             # if more small annotations than needed
             # add small annotations and large annotations to new_images_small
             new_annotations_small.extend(anno_list)
             new_images_small.append(img_id_dict[id])
-        if len(annos_large) >= size_annos * args.fraction:
+        if len(annos_large) >= max(round(size_annos * args.fraction), 1):
             new_annotations_large.extend(anno_list)
             new_images_large.append(img_id_dict[id])
 
