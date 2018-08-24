@@ -18,7 +18,6 @@ def parse_args():
         dest='train_json',
         type=str,
         help='Include here the path to the train_json file of your dataset.',
-        default=""
     )
 
     parser.add_argument(
@@ -26,7 +25,6 @@ def parse_args():
         dest='test_json',
         type=str,
         help='Include here the path to the test_json file of your dataset.',
-        default=""
     )
 
     if len(sys.argv) == 1:
@@ -66,9 +64,14 @@ def annotation_statistics(annotations, stats=None, area_list=None):
 
     return stats
 
+
 def main():
     args = parse_args()
-    files = [args.train_json, args.test_json]
+    files = []
+    if args.train_json is not None:
+        files.append(args.train_json)
+    if args.test_json is not None:
+        files.append(args.test_json)
 
     stats = {
         "else": 0,
