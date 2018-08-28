@@ -14,17 +14,12 @@ def parse_args():
         description='determine dataset statistics'
     )
     parser.add_argument(
-        '--train_json',
-        dest='train_json',
+        '--json',
+        dest='json_files',
+        action='append',
         type=str,
         help='Include here the path to the train_json file of your dataset.',
-    )
-
-    parser.add_argument(
-        '--test_json',
-        dest='test_json',
-        type=str,
-        help='Include here the path to the test_json file of your dataset.',
+        required=True
     )
 
     if len(sys.argv) == 1:
@@ -33,7 +28,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def annotation_statistics(annotations, stats=None, area_list=None):
+def annotation_statistics(annotations, categories, stats=None, area_list=None, category_count=None):
     if stats is None:
         stats = {
             "else": 0,
@@ -46,7 +41,16 @@ def annotation_statistics(annotations, stats=None, area_list=None):
         for size in sizes:
             stats[size] = 0
 
+    if category_count is None:
+        category_count = {}
+        category_count['ids'] = {}
+        category_count['count'] = {}
+        for cat in categories:
+            category_count['count'][cat['name']] = 0
+            category_count['ids'][cat['id']] = cat['name']
+
     for anno in annotations:
+        category_count['count'][category_count['ids'][anno['category_id']]] += 1
         area = anno["area"]
         for size in sizes:
             if 1.0 * (size - step) * (size - step) <= area < 1.0 * size * size:
@@ -62,16 +66,12 @@ def annotation_statistics(annotations, stats=None, area_list=None):
         if area_list is not None:
             area_list.append(area)
 
-    return stats
+    return stats, category_count
 
 
 def main():
     args = parse_args()
-    files = []
-    if args.train_json is not None:
-        files.append(args.train_json)
-    if args.test_json is not None:
-        files.append(args.test_json)
+    files = args.json_files
 
     stats = {
         "else": 0,
@@ -83,16 +83,19 @@ def main():
     }
     for size in sizes:
         stats[size]  = 0
-
     area_list = []
+
 
     for file in files:
         coco = COCO(file)
         imgs = coco.loadImgs(coco.getImgIds())
+        cats = coco.loadCats(coco.getCatIds())
         img_ids = [img['id'] for img in imgs]
         annIds = coco.getAnnIds(imgIds=img_ids, iscrowd=None)
         anns = coco.loadAnns(annIds)
-        annotation_statistics(anns, stats, area_list)
+        _, category_count = annotation_statistics(anns, cats, stats, area_list)
+        print("File {} has category_count:".format(file))
+        print(category_count['count'])
 
     stats["max"] = stats["max"] ** 0.5
     stats["min"] = stats["min"] ** 0.5
