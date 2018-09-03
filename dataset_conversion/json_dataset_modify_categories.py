@@ -38,6 +38,13 @@ def parse_args():
         default=""
     )
 
+    parser.add_argument(
+        '--postfix',
+        dest='postfix',
+        help='postfix for modified dataset',
+        default='ignore'
+    )
+
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
@@ -129,12 +136,12 @@ def main():
                                 "categories": categories
                                 }
 
-    with open(json_file_name + '_ignore_complete.json', 'w') as fp:
+    with open(json_file_name + '_' + args.postfix + '_complete.json', 'w') as fp:
         json.dump(new_dataset_dict, fp)
-    print("wrote file {}".format(json_file_name + '_ignore_complete.json'))
-    with open(json_file_name + '_ignore.json', 'w') as fp:
+    print("wrote file {}".format(json_file_name + '_' + args.postfix + '_complete.json'))
+    with open(json_file_name + '_' + args.postfix + '.json', 'w') as fp:
         json.dump(new_dataset_dict_partial, fp)
-    print("wrote file {}".format(json_file_name + '_ignore.json'))
+    print("wrote file {}".format(json_file_name + '_' + args.postfix + '.json'))
 
 
 if __name__ == '__main__':
