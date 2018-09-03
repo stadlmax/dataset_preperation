@@ -13,7 +13,6 @@ def parse_args():
         dest='ann_dir',
         type=str,
         help='Include here the path to the annotations directory of your dataset.',
-        default=""
     )
 
     parser.add_argument(
@@ -21,7 +20,13 @@ def parse_args():
         dest='data_type',
         type=str,
         help='Include here the type of your dataset.',
-        default=""
+        default="default"
+    )
+
+    parser.add_argument(
+        '--json',
+        dest='json',
+        help='Include annotation file if only one to be evaluated'
     )
 
     if len(sys.argv) == 1:
@@ -29,12 +34,18 @@ def parse_args():
         sys.exit(1)
     return parser.parse_args()
 
-def main():
-    args = parse_args()
-    if args.data_type == "coco":
-        annotation_files = glob.glob(args.ann_dir + '/instances*.json')
+
+def specs_routine(args):
+    annotation_files = []
+    if args.ann_dir is not None:
+        if args.data_type == "coco":
+            annotation_files = glob.glob(args.ann_dir + '/instances*.json')
+        else:
+            annotation_files = glob.glob(args.ann_dir + '/*.json')
+    elif args.json is not None:
+        annotation_files = [args.json]
     else:
-        annotation_files = glob.glob(args.ann_dir + '/*.json')
+        raise ValueError('You have to specify either a json-file or an annotation directory!!')
 
     for file in annotation_files:
         coco = COCO(file)
@@ -49,4 +60,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    args = parse_args()
+    specs_routine(args)

@@ -68,9 +68,7 @@ def annotation_statistics(annotations, categories, stats=None, area_list=None, c
 
     return stats, category_count
 
-
-def main():
-    args = parse_args()
+def statistics_routine(args):
     files = args.json_files
 
     stats = {
@@ -116,4 +114,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    args = parse_args()
+    statistics_routine(args)
