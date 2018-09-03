@@ -2,7 +2,6 @@ import json
 import sys
 import os
 import argparse
-from conversion_base import CocoConversion
 
 
 """

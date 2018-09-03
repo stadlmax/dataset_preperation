@@ -2,8 +2,6 @@ import json
 import sys
 import os
 import argparse
-from conversion_base import CocoConversion
-
 
 """
 Utilites to remove categories that should be ignored during testing
